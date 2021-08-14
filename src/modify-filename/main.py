@@ -8,7 +8,7 @@ def main(parser: CommandParser):
     map_dependency = parser.require('map-dependency')[0]
 
     # 读取映射依赖文件
-    map = {}
+    _map = {}
     flag = True
     for line in open(map_dependency, 'r', encoding='utf8'):
         # 跳过首行
@@ -20,7 +20,7 @@ def main(parser: CommandParser):
         sp = line.split()
         sample_accession = sp[5]
         gen_dataset_id = sp[4]
-        map[sample_accession] = gen_dataset_id
+        _map[sample_accession] = gen_dataset_id
 
     # 遍历目标文件夹下的所有文件
     for file in os.listdir(target_dir):
@@ -31,8 +31,10 @@ def main(parser: CommandParser):
             word = word_list[i]
             if word[0:3] == 'SRS':
                 # 该单词需要更改
-                word_list[i] = map.get(word)
-                modified = True
+                replace = _map.get(word)
+                if replace is not None:
+                    word_list[i] = replace
+                    modified = True
         if modified:
             # 更改文件名
             new_filename = '_'.join(word_list) + ext
